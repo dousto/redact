@@ -15,3 +15,6 @@ apt-get install -y fluid-soundfont-gm
 apt-get install -y git
 apt-get install -y nodejs
 apt-get install -y npm
+
+# Node conflicts with another apt-get package, so we have to rename 'nodejs' to 'node'
+update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10
