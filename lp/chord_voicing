@@ -1,0 +1,62 @@
+% File: chord_voicing
+% Author: Doug Stoeckmann (dousto@gmail.com)
+%
+% To be run in conjunction with an answer set produced by the progression logic file.
+
+chordNoteRange(43..64).
+time(0..m-1).
+
+#domain chordNoteRange(CNR).
+#domain chordNoteRange(CNR1).
+#domain time(T).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Voicing rules for major chords %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Require at least one of the chord's root notes
+1{playRoot(CNRL, T) : majorChordRoot(N, CNRL) : chordNoteRange(CNRL)} :- playMajorChord(N, T).
+playNote(CNR, T) :- playRoot(CNR, T).
+
+% Require at least one of the chord's third notes
+1{playThird(CNRL, T) : majorChordThird(N, CNRL) : chordNoteRange(CNRL)} :- playMajorChord(N, T).
+playNote(CNR, T) :- playThird(CNR, T).
+
+% Require at least one of the chord's fifth notes
+1{playFifth(CNRL, T) : majorChordFifth(N, CNRL) : chordNoteRange(CNRL)} :- playMajorChord(N, T).
+playNote(CNR, T) :- playFifth(CNR, T).
+
+% Prevent answers with less than 4 notes
+:- playMajorChord(N, T), {playNote(CNRL, T) : chordNoteRange(CNRL)}3.
+% Prevent answers with more than 5 notes
+:- playMajorChord(N, T), 6{playNote(CNRL, T) : chordNoteRange(CNRL)}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Voicing rules for minor chords %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Require at least one of the chord's root notes
+1{playRoot(CNRL, T) : minorChordRoot(N, CNRL) : chordNoteRange(CNRL)} :- playMinorChord(N, T).
+playNote(CNR, T) :- playRoot(CNR, T).
+
+% Require at least one of the chord's third notes
+1{playThird(CNRL, T) : minorChordThird(N, CNRL) : chordNoteRange(CNRL)} :- playMinorChord(N, T).
+playNote(CNR, T) :- playThird(CNR, T).
+
+% Require at least one of the chord's fifth notes
+1{playFifth(CNRL, T) : minorChordFifth(N, CNRL) : chordNoteRange(CNRL)} :- playMinorChord(N, T).
+playNote(CNR, T) :- playFifth(CNR, T).
+
+% Prevent answers with less than 4 notes
+:- playMinorChord(N, T), {playNote(CNRL, T) : chordNoteRange(CNRL)}3.
+% Prevent answers with more than 5 notes
+:- playMinorChord(N, T), 6{playNote(CNRL, T) : chordNoteRange(CNRL)}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Assume a duration of 1 for each chord
+releaseNote(CNR, T+1) :- playNote(CNR, T).
+
+#hide.
+#show playNote/2.
+#show releaseNote/2.

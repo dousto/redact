@@ -1,0 +1,66 @@
+% File: progression
+% Author: Doug Stoeckmann (dousto@gmail.com)
+
+%*
+time(0..m-2).
+finaltime(m-1).
+chord(1..12).
+
+#domain time(I).
+#domain finaltime(M).
+#domain chord(C).
+
+% Don't play the same chord twice in a row
+:- 2{playChord(C, I), playChord(C, I+1)}2.
+
+% Don't play more than one chord at the same time.
+:- 2{playChord(CL, I) : chord(CL)}.
+:- 2{playChord(CL, M) : chord(CL)}.
+
+1{playChord(1, I+1), playChord(3, I+1), playChord(5, I+1), playChord(6, I+1), playChord(8, I+1), playChord(10, I+1)}1 :- 1{playChord(1, I), playChord(10, I)}1.
+1{playChord(8, I+1)}1 :- playChord(3, I).
+1{playChord(10, I+1)}1 :- playChord(5, I).
+1{playChord(1, I+1), playChord(8, I+1), playChord(10, I+1)}1 :- playChord(6, I).
+1{playChord(1, I+1), playChord(10, I+1)}1 :- playChord(8, I).
+%1{playChord(3, I+1)}1 :- playChord(10, I).
+
+% Start with the root or six
+1{playChord(1, 0), playChord(10, 0)}1.
+
+% The final chord must be a 1, 4 (half-step 6),
+% or 5 (half-step 8) (so when it repeats, it goes to 1)
+:- not 1{playChord(1, M), playChord(6, M), playChord(8, M)}1.
+1{playChord(6, M), playChord(8, M), playChord(10, M)}1 :- playChord(1, 0).
+1{playChord(1, M), playChord(5, M), playChord(6, M), playChord(8, M)}1 :- playChord(10, 0).
+*%
+
+
+% Initialize range atoms
+time(0). time(X+1) :- time(X), X < m-2.
+#const finaltime = m-1.
+chord(1). chord(X+1) :- chord(X), X < 12.
+
+% Don't play the same chord twice in a row
+:- 2{playChord(C, I); playChord(C, I+1)}2, chord(C), time(I).
+
+% Don't play more than one chord at the same time.
+:- 2{playChord(CL, I) : chord(CL)}, time(I).
+:- 2{playChord(CL, finaltime) : chord(CL)}.
+
+1{playChord(1, I+1); playChord(3, I+1); playChord(5, I+1); playChord(6, I+1); playChord(8, I+1); playChord(10, I+1)}1 :- 1{playChord(1, I); playChord(10, I)}1, time(I).
+1{playChord(8, I+1)}1 :- playChord(3, I), time(I).
+1{playChord(10, I+1)}1 :- playChord(5, I), time(I).
+1{playChord(1, I+1); playChord(8, I+1); playChord(10, I+1)}1 :- playChord(6, I), time(I).
+1{playChord(1, I+1); playChord(10, I+1)}1 :- playChord(8, I), time(I).
+%1{playChord(3, I+1)}1 :- playChord(10, I), time(I).
+
+% Start with the root or six
+1{playChord(1, 0); playChord(10, 0)}1.
+
+% The final chord must be a 1, 4 (half-step 6),
+% or 5 (half-step 8) (so when it repeats, it goes to 1)
+:- not 1{playChord(1, finaltime); playChord(6, finaltime); playChord(8, finaltime)}1.
+1{playChord(6, finaltime); playChord(8, finaltime); playChord(10, finaltime)}1 :- playChord(1, 0).
+1{playChord(1, finaltime); playChord(5, finaltime); playChord(6, finaltime); playChord(8, finaltime)}1 :- playChord(10, 0).
+
+#show playChord/2.

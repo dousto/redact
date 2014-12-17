@@ -1,0 +1,28 @@
+playChordName(c, I) :- playChord(1, I).
+playChordName(cs, I) :- playChord(2, I).
+playChordName(d, I) :- playChord(3, I).
+playChordName(ds, I) :- playChord(4, I).
+playChordName(e, I) :- playChord(5, I).
+playChordName(f, I) :- playChord(6, I).
+playChordName(fs, I) :- playChord(7, I).
+playChordName(g, I) :- playChord(8, I).
+playChordName(gs, I) :- playChord(9, I).
+playChordName(a, I) :- playChord(10, I).
+playChordName(as, I) :- playChord(11, I).
+playChordName(b, I) :- playChord(12, I).
+
+playNoteName(c, RN / 12, I):- playNote(RN, I), RN \ 12 == 0.
+playNoteName(cs, RN / 12, I):- playNote(RN, I), RN \ 12 == 1.
+playNoteName(d, RN / 12, I):- playNote(RN, I), RN \ 12 == 2.
+playNoteName(ds, RN / 12, I):- playNote(RN, I), RN \ 12 == 3.
+playNoteName(e, RN / 12, I):- playNote(RN, I), RN \ 12 == 4.
+playNoteName(f, RN / 12, I):- playNote(RN, I), RN \ 12 == 5.
+playNoteName(fs, RN / 12, I):- playNote(RN, I), RN \ 12 == 6.
+playNoteName(g, RN / 12, I):- playNote(RN, I), RN \ 12 == 7.
+playNoteName(gs, RN / 12, I):- playNote(RN, I), RN \ 12 == 8.
+playNoteName(a, RN / 12, I):- playNote(RN, I), RN \ 12 == 9.
+playNoteName(as, RN / 12, I):- playNote(RN, I), RN \ 12 == 10.
+playNoteName(b, RN / 12, I):- playNote(RN, I), RN \ 12 == 11.
+
+#show playNoteName/3.
+#show playChordName/2.
