@@ -45,4 +45,4 @@
 ###############
 **/.vagrant
 **/node_modules
-
+public/stylesheets/**/*.css
