@@ -1,8 +1,8 @@
 % File: music
 % Author: Doug Stoeckmann (dousto@gmail.com)
 
-note(1). note(X + 1) :- note(X), X < 12.
-rawNote(21). rawNote(X + 1) :- rawNote(X), X < 108.
+note(1..12).
+rawNote(21..108).
 key(1, major).
 
 sameNote(N, RN) :- RN \ 12 == N-1, rawNote(RN), note(N).
