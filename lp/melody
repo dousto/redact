@@ -7,52 +7,45 @@
 melodyNoteRange(48..72).
 time(from..to-1).
 alltime(from..to).
-finaltime(to).
-
-#domain time(T).
-#domain alltime(AT).
-#domain finaltime(FT).
-#domain melodyNoteRange(MNR).
-#domain melodyNoteRange(MNR1).
-#domain playChord(CN, C).
+#const finaltime = to.
 
 % Hold a note that gets played
-holdNote(MNR, AT) :- playNote(MNR, AT).
+holdNote(MNR, AT) :- playNote(MNR, AT), melodyNoteRange(MNR), alltime(AT).
 %Continue to hold the note unless another gets played
-holdNote(MNR, T+1) :- holdNote(MNR, T), not play(T+1).
+holdNote(MNR, T+1) :- holdNote(MNR, T), not play(T+1), melodyNoteRange(MNR), time(T).
 % Release the previous note when a new note should play
-releaseNote(MNR, T+1) :- holdNote(MNR, T), play(T+1).
+releaseNote(MNR, T+1) :- holdNote(MNR, T), play(T+1), melodyNoteRange(MNR), time(T).
 
 % Needed to cut off the final note
 % Since the melody is built incrementally, the finish atom signifies there will be no more increments
-releaseNote(MNR, FT+1) :- holdNote(MNR, FT), finish.
+releaseNote(MNR, finaltime+1) :- holdNote(MNR, finaltime), finish, melodyNoteRange(MNR).
 
 % Play a note from the scale if the rhythm says so
-1{playNote(MNRL, AT) : melodyNoteRange(MNRL) : scaleNote(MNRL)}1 :- play(AT).
+1{playNote(MNRL, AT) : melodyNoteRange(MNRL), scaleNote(MNRL)}1 :- play(AT), alltime(AT).
 
 % In general, if the rhythm says to play a note at time T, pick any note not more than an octave interval
-1{playNote(MNRL, AT) : MNRL > MNR-13 : MNRL < MNR+13 : melodyNoteRange(MNRL)}1 :- play(AT), holdNote(MNR, AT).
+1{playNote(MNRL, AT) : MNRL > MNR-13, MNRL < MNR+13, melodyNoteRange(MNRL)}1 :- play(AT), holdNote(MNR, AT), melodyNoteRange(MNR), alltime(AT).
 
 % If a note is played directly after another,  don't leap more than a major fifth interval
-1{playNote(MNRL, T+1) : MNRL > MNR-8 : MNRL < MNR+8 : melodyNoteRange(MNRL)}1 :- play(T+1), play(T), holdNote(MNR, T).
+1{playNote(MNRL, T+1) : MNRL > MNR-8, MNRL < MNR+8, melodyNoteRange(MNRL)}1 :- play(T+1), play(T), holdNote(MNR, T), melodyNoteRange(MNR), time(T).
 
 % If a note is held for a while, make sure it's at least part of the chord being played
-:- playNote(MNR, AT), not play(AT+1), not play(AT+2), playMajorChord(CN, AT/8), not majorChordNote(CN, MNR).
-:- playNote(MNR, AT), not play(AT+1), not play(AT+2), playMinorChord(CN, AT/8), not minorChordNote(CN, MNR).
+:- playNote(MNR, AT), not play(AT+1), not play(AT+2), playMajorChord(CN, AT/8), not majorChordNote(CN, MNR), melodyNoteRange(MNR), alltime(AT).
+:- playNote(MNR, AT), not play(AT+1), not play(AT+2), playMinorChord(CN, AT/8), not minorChordNote(CN, MNR), melodyNoteRange(MNR), alltime(AT).
 
 % If a note jumps more than a major third interval, it should jump to a note in the chord
-:- playNote(MNR, T+1), holdNote(MNR1, T), #abs(MNR-MNR1) > 4, playMajorChord(CN, (T+1)/8), not majorChordNote(CN, MNR).
-:- playNote(MNR, T+1), holdNote(MNR1, T), #abs(MNR-MNR1) > 4, playMinorChord(CN, (T+1)/8), not minorChordNote(CN, MNR).
+:- playNote(MNR, T+1), holdNote(MNR1, T), |MNR-MNR1| > 4, playMajorChord(CN, (T+1)/8), not majorChordNote(CN, MNR), melodyNoteRange(MNR), melodyNoteRange(MNR1), time(T).
+:- playNote(MNR, T+1), holdNote(MNR1, T), |MNR-MNR1| > 4, playMinorChord(CN, (T+1)/8), not minorChordNote(CN, MNR), melodyNoteRange(MNR), melodyNoteRange(MNR1), time(T).
 
 % Don't hold notes not in the chord when the chord is played (it sounds bad)
 % Note: This assumes a 4/4 time signature and will need to be generalized in the future
-:- holdNote(MNR, AT), not play(AT+1), ((AT+1) \ 8) == 0, playMajorChord(CN, (AT+1)/8), not majorChordNote(CN, MNR).
-:- holdNote(MNR, AT), not play(AT+1), ((AT+1) \ 8) == 0, playMinorChord(CN, (AT+1)/8), not minorChordNote(CN, MNR).
+:- holdNote(MNR, AT), not play(AT+1), ((AT+1) \ 8) == 0, playMajorChord(CN, (AT+1)/8), not majorChordNote(CN, MNR), melodyNoteRange(MNR), alltime(AT).
+:- holdNote(MNR, AT), not play(AT+1), ((AT+1) \ 8) == 0, playMinorChord(CN, (AT+1)/8), not minorChordNote(CN, MNR), melodyNoteRange(MNR), alltime(AT).
 
 % Play no more than 1 note at a time
-:- 2{playNote(MNRL, AT) : melodyNoteRange(MNRL)}.
+:- 2{playNote(MNRL, AT) : melodyNoteRange(MNRL)}, alltime(AT).
 
-#hide.
+%*
 #show playNote/2.
 #show releaseNote/2.
-
+*%
