@@ -63,4 +63,6 @@ chord(1). chord(X+1) :- chord(X), X < 12.
 1{playChord(6, finaltime); playChord(8, finaltime); playChord(10, finaltime)}1 :- playChord(1, 0).
 1{playChord(1, finaltime); playChord(5, finaltime); playChord(6, finaltime); playChord(8, finaltime)}1 :- playChord(10, 0).
 
+%*
 #show playChord/2.
+*%

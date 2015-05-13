@@ -8,5 +8,7 @@ time(from..to).
 %1{play(T);dontplay(T)}1 :- time(T).
 play(T) | dontplay(T) :- time(T).
 
+%*
 #show play/1.
 #show dontplay/1.
+*%

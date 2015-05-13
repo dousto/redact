@@ -24,5 +24,7 @@ playNoteName(a, RN / 12, I):- playNote(RN, I), RN \ 12 == 9.
 playNoteName(as, RN / 12, I):- playNote(RN, I), RN \ 12 == 10.
 playNoteName(b, RN / 12, I):- playNote(RN, I), RN \ 12 == 11.
 
+%*
 #show playNoteName/3.
 #show playChordName/2.
+*%
