@@ -3,6 +3,7 @@ var router = express.Router();
 var path = require('path');
 var Clingo = require('clingojs');
 var Sampler = require('weighted-reservoir-sampler');
+var debug = require('debug')('redact');
 
 var AStoMIDI = require('../lib/as-to-midi');
 
@@ -18,7 +19,7 @@ function asToMidi(req, res) {
   res.send(asToMidi.test());
 }
 
-function chords(req, res) {
+function chords_OLD(req, res) {
     var clingo = new Clingo().config({
         maxModels: 0
     });
@@ -44,37 +45,43 @@ function chords(req, res) {
         })
 }
 
-function chords1(req, res) {
-  var clingo = new Clingo().config({
-    maxModels: 0
-  });
+function chords(req, res) {
+  var ChordGen = require('../lib/chords');
+  var chordGen = new ChordGen();
+  var ChordVoicing = require('../lib/chord-voicing');
+  var chordVoicing = new ChordVoicing();
 
-//    var models = [];
-  var sampler = new Sampler();
-
-  clingo.solve({
-    inputFiles: [path.resolve(__dirname, '../lp/music'),
-      path.resolve(__dirname, '../lp/rhythm'),
-      path.resolve(__dirname, '../lp/progression'),
-      path.resolve(__dirname, '../lp/chord_voicing')],
-    constants: { m: req.params.numChords || 2 },
-    //constants: { from: 0, to: 2 },
-    input: ['#show playNote/2', '#show releaseNote/2']
+  var numChords = req.params.numChords || 2;
+  chordGen.generate(numChords, function(chords) {
+    debug("Progression result: " + chords);
+    chordVoicing.generate(numChords, chords, function(notes) {
+      res.type('json');
+      res.send(JSON.stringify(notes));
+    });
   })
-    .on('model', function(model) {
-      sampler.push(model);
-    })
-    .on('end', function() {
+}
+
+function chords1(req, res) {
+
+  var ChordGen = require('../lib/chords');
+  var chordGen = new ChordGen();
+  var ChordVoicing = require('../lib/chord-voicing');
+  var chordVoicing = new ChordVoicing();
+
+  var numChords = req.params.numChords || 2;
+  chordGen.generate(numChords, function(chords) {
+    debug("Progression result: " + chords);
+    chordVoicing.generate(numChords, chords, function(notes) {
       var Midi = require('jsmidgen');
 
       var file = new Midi.File();
       var track = new Midi.Track();
       file.addTrack(track);
 
-      track.setTempo(60);
+      track.setTempo(100);
       track.setInstrument(1, 0, 0);
       var asToMidi = new AStoMIDI();
-      var events = asToMidi.convertToMidiEvents(sampler.end()[0]);
+      var events = asToMidi.convertToMidiEvents(notes, { scale: 4*128 });
       for (var i = 0; i < events.length; i++) {
         track.addEvent(events[i]);
       }
@@ -113,7 +120,8 @@ function chords1(req, res) {
           });
         });
       });
-    })
+    });
+  })
 }
 
 function scale(req, res) {

@@ -4,7 +4,7 @@
 % To be run in conjunction with an answer set produced by the progression logic file.
 
 chordNoteRange(43..64).
-time(0..m-1).
+time(from..to).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Voicing rules for major chords %
