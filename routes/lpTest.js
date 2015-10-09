@@ -67,56 +67,66 @@ function chords1(req, res) {
   var chordGen = new ChordGen();
   var ChordVoicing = require('../lib/chord-voicing');
   var chordVoicing = new ChordVoicing();
+  var Melody = require('../lib/melody');
+  var melody = new Melody();
 
   var numChords = req.params.numChords || 2;
   chordGen.generate(numChords, function(chords) {
     debug("Progression result: " + chords);
     chordVoicing.generate(numChords, chords, function(notes) {
-      var Midi = require('jsmidgen');
+      melody.generate(numChords*8-1, chords, function(melodyNotes) {
+        var Midi = require('jsmidgen');
 
-      var file = new Midi.File();
-      var track = new Midi.Track();
-      file.addTrack(track);
+        var file = new Midi.File();
+        var track = new Midi.Track();
+        var melodyTrack = new Midi.Track();
+        file.addTrack(track);
+        file.addTrack(melodyTrack);
 
-      track.setTempo(100);
-      track.setInstrument(1, 0, 0);
-      var asToMidi = new AStoMIDI();
-      var events = asToMidi.convertToMidiEvents(notes, { scale: 4*128 });
-      for (var i = 0; i < events.length; i++) {
-        track.addEvent(events[i]);
-      }
-      var byteBuffer = new Buffer(file.toBytes(), 'binary');
+        track.setTempo(100);
+        track.setInstrument(1, 0, 0);
+        var asToMidi = new AStoMIDI();
+        var events = asToMidi.convertToMidiEvents(notes, { scale: 4*128 });
+        for (var i = 0; i < events.length; i++) {
+          track.addEvent(events[i]);
+        }
+        events = asToMidi.convertToMidiEvents(melodyNotes, { scale: 64 });
+        for (var i = 0; i < events.length; i++) {
+          melodyTrack.addEvent(events[i]);
+        }
+        var byteBuffer = new Buffer(file.toBytes(), 'binary');
 
-      res.status(200)
-        .set({
-          'Content-Type': 'audio/mp3',
-          'Content-Length': byteBuffer.length
-        });
-      //.send(byteBuffer);
+        res.status(200)
+            .set({
+              'Content-Type': 'audio/mp3',
+              'Content-Length': byteBuffer.length
+            });
+        //.send(byteBuffer);
 
-      var stream = require('stream');
+        var stream = require('stream');
 
-      var byteStream = new stream.PassThrough();
-      byteStream.end(byteBuffer);
+        var byteStream = new stream.PassThrough();
+        byteStream.end(byteBuffer);
 
-      var spawn = require('child_process').spawn;
+        var spawn = require('child_process').spawn;
 
-      var fs = require('fs');
-      var uuid = require('uuid');
-      var wavFile = uuid.v4();
-      var timidity = spawn("timidity", ["-", "-A90a", "-Ow", "-o", wavFile, "--output-24bit"]);
-      byteStream.pipe(timidity.stdin);
-      timidity.on('exit', function() {
-        var mp3File = uuid.v4() + ".mp3";
-        var lame = spawn("lame", [wavFile, mp3File]);
-        lame.on('exit', function() {
-          fs.unlink(wavFile, function(){});
-          res.download(mp3File, "myfile.mp3", function(err) {
-            if (err) {
-              res.send(err);
-            } else {
-              fs.unlink(mp3File, function(){});
-            }
+        var fs = require('fs');
+        var uuid = require('uuid');
+        var wavFile = uuid.v4();
+        var timidity = spawn("timidity", ["-", "-A90a", "-Ow", "-o", wavFile, "--output-24bit"]);
+        byteStream.pipe(timidity.stdin);
+        timidity.on('exit', function() {
+          var mp3File = uuid.v4() + ".mp3";
+          var lame = spawn("lame", [wavFile, mp3File]);
+          lame.on('exit', function() {
+            fs.unlink(wavFile, function(){});
+            res.download(mp3File, "myfile.mp3", function(err) {
+              if (err) {
+                res.send(err);
+              } else {
+                fs.unlink(mp3File, function(){});
+              }
+            });
           });
         });
       });
