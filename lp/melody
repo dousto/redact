@@ -5,9 +5,9 @@
 % as well as an answer set produced by the rhythm logic file.
 
 melodyNoteRange(48..72).
-time(from..to-1).
-alltime(from..to).
-#const finaltime = to.
+time(mfrom..mto-1).
+alltime(mfrom..mto).
+#const finaltime = mto.
 
 % Hold a note that gets played
 holdNote(MNR, AT) :- playNote(MNR, AT), melodyNoteRange(MNR), alltime(AT).
@@ -41,6 +41,8 @@ releaseNote(MNR, finaltime+1) :- holdNote(MNR, finaltime), finish, melodyNoteRan
 % Note: This assumes a 4/4 time signature and will need to be generalized in the future
 :- holdNote(MNR, AT), not play(AT+1), ((AT+1) \ 8) == 0, playMajorChord(CN, (AT+1)/8), not majorChordNote(CN, MNR), melodyNoteRange(MNR), alltime(AT).
 :- holdNote(MNR, AT), not play(AT+1), ((AT+1) \ 8) == 0, playMinorChord(CN, (AT+1)/8), not minorChordNote(CN, MNR), melodyNoteRange(MNR), alltime(AT).
+:- holdNote(MNR, AT), (AT \ 8) == 0, playMajorChord(CN, AT/8), not majorChordNote(CN, MNR), melodyNoteRange(MNR), alltime(AT).
+:- holdNote(MNR, AT), (AT \ 8) == 0, playMinorChord(CN, AT/8), not minorChordNote(CN, MNR), melodyNoteRange(MNR), alltime(AT).
 
 % Play no more than 1 note at a time
 :- 2{playNote(MNRL, AT) : melodyNoteRange(MNRL)}, alltime(AT).

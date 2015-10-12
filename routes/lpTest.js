@@ -73,7 +73,6 @@ function chords1(req, res) {
 
   var numChords = req.params.numChords || 2;
   chordGen.generate(numChords, function(chords) {
-    debug("Progression result: " + chords);
     chordVoicing.generate(numChords, chords, function(chordNotes) {
       melody.generate(numChords*8-1, chords, function(melodyNotes) {
         var Midi = require('midijs');
@@ -92,10 +91,12 @@ function chords1(req, res) {
         var melodyTrack = file.getTrack(1);
 
         var asToMidi = new AStoMIDI();
+        debug('Build chord midi events');
         var chordEvents = asToMidi.convertToMidiEvents(chordNotes, { scale: 4*128, channel: 0 });
         chordEvents.forEach(function(event) {
           chordTrack.addEvent(event)
         });
+        debug('Build melody midi events');
         var melodyEvents = asToMidi.convertToMidiEvents(melodyNotes, { scale: 64, channel: 1 });
         melodyEvents.forEach(function(event) {
           melodyTrack.addEvent(event)

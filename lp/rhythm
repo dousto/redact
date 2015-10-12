@@ -2,7 +2,7 @@
 % Author: Doug Stoeckmann (dousto@gmail.com)
 
 % Define time steps from..to
-time(from..to).
+time(rfrom..rto).
 
 % At each time step we either play or dontplay
 %1{play(T);dontplay(T)}1 :- time(T).
