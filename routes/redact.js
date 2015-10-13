@@ -8,12 +8,12 @@ var debug = require('debug')('redact');
 var AStoMIDI = require('../lib/as-to-midi');
 
 /* GET users listing. */
-router.get('/', chords);
-router.get('/scale', scale);
-router.get('/play/chords/:numChords', chords1);
-router.get('/test', scale);
-router.get('/asToMidi', asToMidi);
-router.get('/:numChords', chords);
+//router.get('/', chords);
+//router.get('/scale', scale);
+router.get('/play/song/:numChords', song);
+//router.get('/test', scale);
+//router.get('/asToMidi', asToMidi);
+//router.get('/:numChords', chords);
 
 function asToMidi(req, res) {
   var asToMidi = new AStoMIDI();
@@ -62,7 +62,7 @@ function chords(req, res) {
   })
 }
 
-function chords1(req, res) {
+function song(req, res) {
 
   var ChordGen = require('../lib/chords');
   var chordGen = new ChordGen();
