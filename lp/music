@@ -1,44 +1,49 @@
 % File: music
 % Author: Doug Stoeckmann (dousto@gmail.com)
+%
+% Note: You must specify the key using key(<0-11>, <major-minor>)
+%       i.e. key(0, major)
 
-note(1..12).
+note(0..11).
 rawNote(21..108).
-key(1, major).
 
-sameNote(N, RN) :- RN \ 12 == N-1, rawNote(RN), note(N).
+keyNumber(0..11). keyQuality(major).
+:- not 1{key(KN, KQ) : keyNumber(KN), keyQuality(KQ)}1.
+
+sameNote(N, RN) :- RN \ 12 == N, rawNote(RN), note(N).
 
 % Define the constituent notes of a major chord
 majorChordNote(N, RN) :- majorChordRoot(N, RN), note(N), rawNote(RN).
 majorChordNote(N, RN) :- majorChordThird(N, RN), note(N), rawNote(RN).
 majorChordNote(N, RN) :- majorChordFifth(N, RN), note(N), rawNote(RN).
-majorChordRoot(N, RN) :- sameNote(N, RN), note(N), rawNote(RN).
-majorChordThird(N, RN) :- sameNote(((N-1 + 4) \ 12) + 1, RN), note(N), rawNote(RN).
-majorChordFifth(N, RN) :- sameNote(((N-1 + 7) \ 12) + 1, RN), note(N), rawNote(RN).
+majorChordRoot(N, RN) :- sameNote((N + 0) \ 12, RN), note(N), rawNote(RN).
+majorChordThird(N, RN) :- sameNote((N + 4) \ 12, RN), note(N), rawNote(RN).
+majorChordFifth(N, RN) :- sameNote((N + 7) \ 12, RN), note(N), rawNote(RN).
 
 dominantSevenChordNote(N, RN) :- majorChordNote(N, RN), note(N), rawNote(RN).
-dominantSevenChordNote(N, RN) :- sameNote(((N-1 + 10) \ 12) + 1, RN), note(N), rawNote(RN).
+dominantSevenChordNote(N, RN) :- sameNote((N + 10) \ 12, RN), note(N), rawNote(RN).
 
 % Define the constituent notes of a minor chord
 minorChordNote(N, RN) :- minorChordRoot(N, RN), note(N), rawNote(RN).
 minorChordNote(N, RN) :- minorChordThird(N, RN), note(N), rawNote(RN).
 minorChordNote(N, RN) :- minorChordFifth(N, RN), note(N), rawNote(RN).
-minorChordRoot(N, RN) :- sameNote(N, RN), note(N), rawNote(RN).
-minorChordThird(N, RN) :- sameNote(((N-1 + 3) \ 12) + 1, RN), note(N), rawNote(RN).
-minorChordFifth(N, RN) :- sameNote(((N-1 + 7) \ 12) + 1, RN), note(N), rawNote(RN).
+minorChordRoot(N, RN) :- sameNote((N + 0) \ 12, RN), note(N), rawNote(RN).
+minorChordThird(N, RN) :- sameNote((N + 3) \ 12, RN), note(N), rawNote(RN).
+minorChordFifth(N, RN) :- sameNote((N + 7) \ 12, RN), note(N), rawNote(RN).
 
 % Define a major scale
-scaleNote(RN) :- sameNote(K, RN), key(K, major), rawNote(RN).
-scaleNote(RN) :- sameNote(((K-1 + 2) \ 12) + 1, RN), key(K, major), rawNote(RN).
-scaleNote(RN) :- sameNote(((K-1 + 4) \ 12) + 1, RN), key(K, major), rawNote(RN).
-scaleNote(RN) :- sameNote(((K-1 + 5) \ 12) + 1, RN), key(K, major), rawNote(RN).
-scaleNote(RN) :- sameNote(((K-1 + 7) \ 12) + 1, RN), key(K, major), rawNote(RN).
-scaleNote(RN) :- sameNote(((K-1 + 9) \ 12) + 1, RN), key(K, major), rawNote(RN).
-scaleNote(RN) :- sameNote(((K-1 + 11) \ 12) + 1, RN), key(K, major), rawNote(RN).
+scaleNote(RN) :- sameNote((K + 0) \ 12, RN), key(K, major), rawNote(RN).
+scaleNote(RN) :- sameNote((K + 2) \ 12, RN), key(K, major), rawNote(RN).
+scaleNote(RN) :- sameNote((K + 4) \ 12, RN), key(K, major), rawNote(RN).
+scaleNote(RN) :- sameNote((K + 5) \ 12, RN), key(K, major), rawNote(RN).
+scaleNote(RN) :- sameNote((K + 7) \ 12, RN), key(K, major), rawNote(RN).
+scaleNote(RN) :- sameNote((K + 9) \ 12, RN), key(K, major), rawNote(RN).
+scaleNote(RN) :- sameNote((K + 11) \ 12, RN), key(K, major), rawNote(RN).
 
 % Definition of which chords are major/minor in a major key
-playMajorChord(((K-1 + 0) \ 12) + 1, T) :- playChord(1, T), key(K, major).
-playMinorChord(((K-1 + 2) \ 12) + 1, T) :- playChord(3, T), key(K, major).
-playMinorChord(((K-1 + 4) \ 12) + 1, T) :- playChord(5, T), key(K, major).
-playMajorChord(((K-1 + 5) \ 12) + 1, T) :- playChord(6, T), key(K, major).
-playMajorChord(((K-1 + 7) \ 12) + 1, T) :- playChord(8, T), key(K, major).
-playMinorChord(((K-1 + 9) \ 12) + 1, T) :- playChord(10, T), key(K, major).
+playMajorChord((K + 0) \ 12, T) :- playChord(0, T), key(K, major).
+playMinorChord((K + 2) \ 12, T) :- playChord(2, T), key(K, major).
+playMinorChord((K + 4) \ 12, T) :- playChord(4, T), key(K, major).
+playMajorChord((K + 5) \ 12, T) :- playChord(5, T), key(K, major).
+playMajorChord((K + 7) \ 12, T) :- playChord(7, T), key(K, major).
+playMinorChord((K + 9) \ 12, T) :- playChord(9, T), key(K, major).

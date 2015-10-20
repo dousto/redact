@@ -3,7 +3,7 @@
 %
 % To be run in conjunction with an answer set produced by the progression logic file.
 
-chordNoteRange(43..64).
+chordNoteRange(K+43..K+64) :- key(K, _).
 time(from..to).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

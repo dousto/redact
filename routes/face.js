@@ -8,10 +8,13 @@ router.get('/', face);
 function face(req, res) {
   if (!req.query.id) throw new Error("Must provide face ID!");
   var seed = req.query.id;
+  var key = req.query.key;
 
   var SongGenerator = require('../lib/song-generator');
   var songGen = new SongGenerator({
-    rng: seedrandom(seed)
+    rng: seedrandom(seed),
+    tempo: 80,
+    key: key
   });
 
   debug("Begin song generation");

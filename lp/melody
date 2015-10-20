@@ -4,7 +4,7 @@
 % To be run in conjunction with an answer set produced by the progression logic file,
 % as well as an answer set produced by the rhythm logic file.
 
-melodyNoteRange(48..72).
+melodyNoteRange(K+48..K+72) :- key(K, _).
 time(from..to).
 
 % At each timestep either play or dontplay a note %

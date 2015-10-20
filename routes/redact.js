@@ -5,8 +5,9 @@ var debug = require('debug')('redact');
 router.get('/play/song/:numChords', song);
 
 function song(req, res) {
+  var key = req.query.key;
   var SongGenerator = require('../lib/song-generator');
-  var songGen = new SongGenerator();
+  var songGen = new SongGenerator({key: key, tempo: 80});
 
   debug("Begin song generation");
   var numChords = req.params.numChords || 2;
