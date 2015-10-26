@@ -1,3 +1,10 @@
 extends layout
 block content
-    img(src='images/redact.png')
+    img(src='../images/redact.png', height='200px')
+    form(method='POST', action='', enctype='multipart/form-data')
+        input(type='file', name='files')
+        input(type='submit')
+    if id
+        audio(controls)
+            source(src='./?id=' + id)
+        a(href='./?id=' + id + '&download=1') download
