@@ -16,7 +16,10 @@ router.post('/stats', upload.array('files'), stats);
 
 function ui(req, res) {
   res.render('redact-face', {
-    id: req.query.id
+    id: req.query.id,
+    file: req.query.f,
+    chordsInstrument: req.query.ci,
+    melodyInstrument: req.query.mi
   });
 }
 
@@ -25,7 +28,8 @@ function postUi(req, res) {
     var fileData = parse(req.files);
     new FaceMusic({measurements: fileData[0]});
     var idParam = fileData[0].join(",");
-    res.redirect('?id=' + idParam);
+    debug(JSON.stringify(req.files));
+    res.redirect('?id=' + idParam + '&f=' + encodeURIComponent(req.files[0].originalname));
   } else {
     throw new Error("Must provide a file!");
   }
@@ -35,12 +39,16 @@ function face(req, res) {
   if (!req.query.id) throw new Error("Must provide face ID!");
   var seed = req.query.id;
   var key = req.query.key;
+  var chordsInstrument = req.query.ci;
+  var melodyInstrument = req.query.mi;
   var measurements = seed.split(",").map(function(n) { return Number(n); });
   var theFace = new FaceMusic({measurements: measurements});
   var songGen = new SongGenerator({
     rng: seedrandom(seed),
     tempo: theFace.getTempo(),
-    key: key
+    key: key,
+    chordsInstrument: chordsInstrument,
+    melodyInstrument: melodyInstrument
   });
 
   debug("Begin song generation");
@@ -53,7 +61,7 @@ function face(req, res) {
             'Content-Type': 'audio/mp3',
             'Content-Length': length
           });
-        if (Boolean(req.query.download)) res.set({'Content-Disposition': 'attachment; filename=song.mp3'});
+        if (Boolean(req.query.download)) res.set({'Content-Disposition': 'attachment; filename=' + (req.query.f ? req.query.f.replace(/\.[^\.]{0,10}/g, '')+'.mp3' : 'face.mp3')});
         mp3Stream.pipe(res);
       });
     });

@@ -1,10 +1,35 @@
 extends layout
 block content
     img(src='../images/redact.png', height='200px')
+    if id
+        if file
+            p Currently playing: #{file}
+        form(method='GET', action='')
+            input(type='hidden', name='id', value=id)
+            if file
+                input(type='hidden', name='f', value=file)
+            label Chords Instrument:
+            select(name='ci', value=chordsInstrument)
+                - selectedInstrument = chordsInstrument | undefined
+                include ./instruments
+            br
+            label Melody Instrument:
+            select(name='mi', value=melodyInstrument)
+                - selectedInstrument = melodyInstrument | undefined
+                include ./instruments
+            input(type='submit', value='Reload')
+        - url = './?id=' + id
+        - if (chordsInstrument) url += '&ci=' + chordsInstrument
+        - if (melodyInstrument) url += '&mi=' + melodyInstrument
+        - if (file) url += '&f=' + file
+        - durl = url + '&download=1'
+        audio(controls)
+            source(src=url)
+        a(href=durl) download
+    if id
+        p Try another face file:
+    else
+        p Upload a face file:
     form(method='POST', action='', enctype='multipart/form-data')
         input(type='file', name='files')
         input(type='submit')
-    if id
-        audio(controls)
-            source(src='./?id=' + id)
-        a(href='./?id=' + id + '&download=1') download
