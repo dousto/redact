@@ -14,22 +14,54 @@ router.get('/ui', ui);
 router.post('/ui', upload.array('files'), postUi);
 router.post('/stats', upload.array('files'), stats);
 
+function getParamObj(p, face) {
+  var paramObj = {
+    id: p.id,
+    f: p.f,
+    ci: p.ci,
+    mi: p.mi,
+    k: p.k,
+    t: p.t
+  };
+
+  if (face) {
+    if (paramObj.k === undefined) paramObj.k = face.getKey();
+    if (paramObj.t === undefined) paramObj.t = face.getTempo();
+  }
+
+  return paramObj;
+}
+
+function paramObjToQuery(p) {
+  var parr = [];
+  for (var prop in p) {
+    if (p.hasOwnProperty(prop) && p[prop] !== undefined) {
+      parr.push(prop + '=' + encodeURIComponent(p[prop]));
+    }
+  }
+
+  return parr.join('&');
+}
+
 function ui(req, res) {
   res.render('redact-face', {
     id: req.query.id,
     file: req.query.f,
     chordsInstrument: req.query.ci,
-    melodyInstrument: req.query.mi
+    melodyInstrument: req.query.mi,
+    key: req.query.k,
+    tempo: req.query.t
   });
 }
 
 function postUi(req, res) {
   if (req.files.length >= 1) {
     var fileData = parse(req.files);
-    new FaceMusic({measurements: fileData[0]});
-    var idParam = fileData[0].join(",");
-    debug(JSON.stringify(req.files));
-    res.redirect('?id=' + idParam + '&f=' + encodeURIComponent(req.files[0].originalname));
+    var theFace = new FaceMusic({measurements: fileData[0]});
+    var params = getParamObj(req.body, theFace);
+    params.id = fileData[0].join(",");
+    params.f = encodeURIComponent(req.files[0].originalname);
+    res.redirect('?' + paramObjToQuery(params));
   } else {
     throw new Error("Must provide a file!");
   }
@@ -37,18 +69,15 @@ function postUi(req, res) {
 
 function face(req, res) {
   if (!req.query.id) throw new Error("Must provide face ID!");
-  var seed = req.query.id;
-  var key = req.query.key;
-  var chordsInstrument = req.query.ci;
-  var melodyInstrument = req.query.mi;
-  var measurements = seed.split(",").map(function(n) { return Number(n); });
+  var measurements = req.query.id.split(",").map(function(n) { return Number(n); });
   var theFace = new FaceMusic({measurements: measurements});
+  var params = getParamObj(req.query, theFace);
   var songGen = new SongGenerator({
-    rng: seedrandom(seed),
-    tempo: theFace.getTempo(),
-    key: key,
-    chordsInstrument: chordsInstrument,
-    melodyInstrument: melodyInstrument
+    rng: seedrandom(params.id),
+    tempo: Math.max(parseInt(params.t, 10), 30),
+    key: parseInt(params.k, 10),
+    chordsInstrument: parseInt(params.ci, 10),
+    melodyInstrument: parseInt(params.mi, 10)
   });
 
   debug("Begin song generation");

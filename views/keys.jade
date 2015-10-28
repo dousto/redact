@@ -1,0 +1,22 @@
+- options = []
+- options.push({name: 'C', value: 0})
+- options.push({name: 'D♭', value: 1})
+- options.push({name: 'D', value: 2})
+- options.push({name: 'E♭', value: 3})
+- options.push({name: 'E', value: 4})
+- options.push({name: 'F', value: 5})
+- options.push({name: 'G♭', value: 6})
+- options.push({name: 'G', value: 7})
+- options.push({name: 'A♭', value: 8})
+- options.push({name: 'A', value: 9})
+- options.push({name: 'B♭', value: 10})
+- options.push({name: 'B', value: 11})
+
+- for opt in options
+    if opt.value !== undefined
+        if selectedKey === opt.value
+            option(value=opt.value, selected) #{opt.name}
+        else
+            option(value=opt.value) #{opt.name}
+    else
+        option(value=opt.value, disabled='disabled') #{opt.name}

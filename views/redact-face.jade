@@ -9,19 +9,26 @@ block content
             if file
                 input(type='hidden', name='f', value=file)
             label Chords Instrument:
-            select(name='ci', value=chordsInstrument)
+            select(name='ci')
                 - selectedInstrument = chordsInstrument | undefined
                 include ./instruments
             br
             label Melody Instrument:
-            select(name='mi', value=melodyInstrument)
+            select(name='mi')
                 - selectedInstrument = melodyInstrument | undefined
                 include ./instruments
-            input(type='submit', value='Reload')
+            br
+            input(type='number', name='t', value=tempo, min='30')
+            select(name='k', value=key)
+                - selectedKey = key | undefined
+                include ./keys
+            input(type='submit', value='Load these parameters')
         - url = './?id=' + id
-        - if (chordsInstrument) url += '&ci=' + chordsInstrument
-        - if (melodyInstrument) url += '&mi=' + melodyInstrument
-        - if (file) url += '&f=' + file
+        - if (file !== undefined) url += '&f=' + file
+        - if (chordsInstrument !== undefined) url += '&ci=' + chordsInstrument
+        - if (melodyInstrument !== undefined) url += '&mi=' + melodyInstrument
+        - if (key !== undefined) url += '&k=' + key
+        - if (tempo !== undefined) url += '&t=' + tempo
         - durl = url + '&download=1'
         audio(controls)
             source(src=url)
