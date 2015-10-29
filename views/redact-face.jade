@@ -1,6 +1,6 @@
 extends layout
 block content
-    img(src='../images/redact.png', height='200px')
+    img(src='../images/redact.png', width='300px')
     if id
         if file
             p Currently playing: #{file}
@@ -32,6 +32,7 @@ block content
         - durl = url + '&download=1'
         audio(controls)
             source(src=url)
+        br
         a(href=durl) download
     if id
         p Try another face file:

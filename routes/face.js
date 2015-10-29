@@ -72,12 +72,15 @@ function face(req, res) {
   var measurements = req.query.id.split(",").map(function(n) { return Number(n); });
   var theFace = new FaceMusic({measurements: measurements});
   var params = getParamObj(req.query, theFace);
+  var vel = require('../lib/velocities');
   var songGen = new SongGenerator({
     rng: seedrandom(params.id),
     tempo: Math.max(parseInt(params.t, 10), 30),
     key: parseInt(params.k, 10),
     chordsInstrument: parseInt(params.ci, 10),
-    melodyInstrument: parseInt(params.mi, 10)
+    chordsVelocityAdjust: vel.chords[parseInt(params.ci, 10)],
+    melodyInstrument: parseInt(params.mi, 10),
+    melodyVelocityAdjust: vel.melody[parseInt(params.mi, 10)]
   });
 
   debug("Begin song generation");
