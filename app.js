@@ -25,10 +25,10 @@ app.use(cookieParser());
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
-app.use('/users', users);
-app.use('/redact', redact);
-app.use('/redact-face', redact_face);
+//app.use('/', routes);
+//app.use('/users', users);
+//app.use('/redact', redact);
+app.use('/', redact_face);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

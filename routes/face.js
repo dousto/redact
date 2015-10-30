@@ -8,10 +8,10 @@ var SongGenerator = require('../lib/song-generator');
 var Stats = require('fast-stats').Stats;
 var upload = multer();
 
-router.get('/', face);
-router.post('/', upload.array('files'), postFace);
-router.get('/ui', ui);
-router.post('/ui', upload.array('files'), postUi);
+router.get('/compose', face);
+router.post('/compose', upload.array('files'), postFace);
+router.get('/', ui);
+router.post('/', upload.array('files'), postUi);
 router.post('/stats', upload.array('files'), stats);
 
 function getParamObj(p, face) {
@@ -60,7 +60,7 @@ function postUi(req, res) {
     var theFace = new FaceMusic({measurements: fileData[0]});
     var params = getParamObj(req.body, theFace);
     params.id = fileData[0].join(",");
-    params.f = encodeURIComponent(req.files[0].originalname);
+    params.f = encodeURIComponent(req.files[0].originalname).replace(/\.[^\.]{0,10}/g, '')+'.mp3';
     res.redirect('?' + paramObjToQuery(params));
   } else {
     throw new Error("Must provide a file!");

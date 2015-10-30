@@ -23,7 +23,7 @@ block content
                 - selectedKey = key | undefined
                 include ./keys
             input(type='submit', value='Load these parameters')
-        - url = './?id=' + id
+        - url = './compose?id=' + id
         - if (file !== undefined) url += '&f=' + file
         - if (chordsInstrument !== undefined) url += '&ci=' + chordsInstrument
         - if (melodyInstrument !== undefined) url += '&mi=' + melodyInstrument
