@@ -27,6 +27,8 @@ function getParamObj(p, face) {
   if (face) {
     if (paramObj.k === undefined) paramObj.k = face.getKey();
     if (paramObj.t === undefined) paramObj.t = face.getTempo();
+    if (paramObj.ci === undefined) paramObj.ci = face.getChordsInstrument();
+    if (paramObj.mi === undefined) paramObj.mi = face.getMelodyInstrument();
   }
 
   return paramObj;
@@ -133,11 +135,23 @@ function parse(reqFiles) {
 function stats(req, res) {
   var fileData = parse(req.files);
   var funcs = [];
-  funcs.push({"name": "lengthToWidthRatio", "alg": function(data) {
-    var face = new FaceMusic({measurements: data});
-
-    return face.lengthToWidthRatio();
-  }});
+  var funcNames = [
+    "lengthToWidthRatio",
+    "pupilSpacingToCheekWidthRatio",
+    "noseAndMouthWidthToCheekWidthRatio",
+    "eyesToFaceLengthRatio"
+  ];
+  funcNames.forEach(function(funcName) {
+    funcs.push(
+      {
+        "name": funcName,
+        "alg": function(data) {
+          var face = new FaceMusic({measurements: data});
+          return face[funcName]();
+        }
+      }
+    )
+  });
 
   var stats = {};
   funcs.forEach(function(func) {
@@ -150,13 +164,13 @@ function stats(req, res) {
       "min": s.range()[0],
       "max": s.range()[1],
       "avg": s.amean(),
-      "σ": s.σ(),
-      "percentile": {}
+      "σ": s.σ()//,
+      //"percentile": {}
     };
 
-    for(var i = 1; i <= 100; i++) {
-      stats[func.name].percentile[""+i] = s.percentile(i);
-    }
+//    for(var i = 1; i <= 100; i++) {
+//      stats[func.name].percentile[""+i] = s.percentile(i);
+//    }
   });
 
   res.set('Content-Type', 'application/json');
