@@ -1,43 +1,64 @@
 extends layout
 block content
-    img(src='../images/redact.png', width='300px')
+  div(class='container-fluid')
+    div(class='row')
+      img(src='../images/redact.png', class='col-sm-offset-1 col-sm-5')
     if id
-        if file
-            p Currently playing: #{file}
-        form(method='GET', action='')
-            input(type='hidden', name='id', value=id)
-            if file
-                input(type='hidden', name='f', value=file)
-            label Chords Instrument:
-            select(name='ci')
-                - selectedInstrument = chordsInstrument | undefined
-                include ./instruments
-            br
-            label Melody Instrument:
-            select(name='mi')
-                - selectedInstrument = melodyInstrument | undefined
-                include ./instruments
-            br
-            input(type='number', name='t', value=tempo, min='30')
-            select(name='k', value=key)
-                - selectedKey = key | undefined
-                include ./keys
-            input(type='submit', value='Load these parameters')
-        - url = './compose?id=' + id
-        - if (file !== undefined) url += '&f=' + file
-        - if (chordsInstrument !== undefined) url += '&ci=' + chordsInstrument
-        - if (melodyInstrument !== undefined) url += '&mi=' + melodyInstrument
-        - if (key !== undefined) url += '&k=' + key
-        - if (tempo !== undefined) url += '&t=' + tempo
-        - durl = url + '&download=1'
-        audio(controls)
+      - url = './compose?id=' + id
+      - if (file !== undefined) url += '&f=' + file
+      - if (chordsInstrument !== undefined) url += '&ci=' + chordsInstrument
+      - if (melodyInstrument !== undefined) url += '&mi=' + melodyInstrument
+      - if (key !== undefined) url += '&k=' + key
+      - if (tempo !== undefined) url += '&t=' + tempo
+      - durl = url + '&download=1'
+      if file
+        div(class='row')
+          div(class='col-sm-offset-1 col-sm-5')
+            h3 Currently playing: #{file}
+        div(class='row')
+          audio(controls, class='col-sm-offset-1 col-sm-5')
             source(src=url)
-        br
-        a(href=durl) download
+          a(href=durl) download
+        div(class='row') &nbsp;
+
+      form(class='form-horizontal')
+        input(type='hidden', name='id', class='form-control', value=id)
+        if file
+            input(type='hidden', name='f', class='form-control', value=file)
+        div(class='form-group')
+          label(for='ci', class='col-sm-1 control-label') Chords:
+          div(class='col-sm-2')
+            select(name='ci', id='ci', class='form-control')
+              - selectedInstrument = chordsInstrument | undefined
+              include ./instruments
+          label(for='mi', class='col-sm-1 control-label') Melody:
+          div(class='col-sm-2')
+            select(name='mi', id='mi', class='form-control')
+              - selectedInstrument = melodyInstrument | undefined
+              include ./instruments
+        div(class='form-group')
+          label(for='t', class='col-sm-1 control-label') Tempo:
+          div(class='col-sm-2')
+            input(type='number', name='t', id='t', class='form-control' value=tempo, min='30')
+          label(for='k', class='col-sm-1 control-label') Key:
+          div(class='col-sm-2')
+            select(name='k', class='form-control', value=key)
+              - selectedKey = key | undefined
+              include ./keys
+        div(class='form-group')
+          div(class='col-sm-offset-1 col-sm-2')
+            input(type='submit', class='form-control' value='Load these parameters')
     if id
-        p Try another face file:
+      div(class='row')
+        div(class='col-sm-offset-1 col-sm-6')
+          h4 Try another face file:
     else
-        p Upload a face file:
-    form(method='POST', action='', enctype='multipart/form-data')
-        input(type='file', name='files')
-        input(type='submit')
+      div(class='row')
+        div(class='col-sm-offset-1 col-sm-6')
+          h4 Upload a face file:
+    form(class='form-horizontal', method='POST', action='', enctype='multipart/form-data')
+      div(class='form-group')
+        div(class='col-sm-offset-1 col-sm-3')
+          input(type='file', name='files', class='form-control')
+        div(class='col-sm-2')
+          input(type='submit', class='form-control')
