@@ -16,13 +16,15 @@ block content
         div(class='row')
           div(class='col-sm-offset-3 col-sm-6')
             h3 Currently playing: #{file}
-        div(class='row')
-          audio(controls, class='col-sm-offset-3 col-sm-6', width='100%')
-            source(src=url)
-        div(class='row')
-          div(class='col-sm-offset-3 col-sm-2')
-            a(href=durl) download
+      else
         div(class='row') &nbsp;
+      div(class='row')
+        audio(controls, class='col-sm-offset-3 col-sm-6', width='100%')
+          source(src=url)
+      div(class='row')
+        div(class='col-sm-offset-3 col-sm-2')
+          a(href=durl) download
+      div(class='row') &nbsp;
 
       form(class='form-horizontal')
         input(type='hidden', name='id', class='form-control', value=id)
